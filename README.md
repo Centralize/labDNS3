@@ -76,6 +76,9 @@ License
 - (C) Copyright 2025 by OPNLAB Development. This work is licensed through AGPL 3.0.
 - See LICENSE.md for full license details.
 
+Changelog
+- See CHANGELOG.md for release notes. Latest: 0.3.3
+
 GUI (Optional)
 - Script: `./labdns-gui.sh` (requires `zenity` or `yad`)
 - Make executable: `chmod +x labdns-gui.sh`
