@@ -55,3 +55,7 @@ Supported record types
 Notes
 - Binding to UDP port 53 typically requires elevated privileges; use `--port 5353` for local testing.
 - SIGHUP-based hot reload supported when zones change.
+
+License
+- (C) Copyright 2025 by OPNLAB Development. This work is licensed through AGPL 3.0.
+- See LICENSE.md for full license details.

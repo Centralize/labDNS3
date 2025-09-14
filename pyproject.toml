@@ -9,8 +9,13 @@ description = "labDNS 3.0 – lightweight, extensible DNS server in Python"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
 authors = [
+  { name = "OPNLAB Development" },
   { name = "labDNS Team" }
 ]
+maintainers = [
+  { name = "OPNLAB Development" }
+]
+license = { file = "LICENSE.md" }
 dependencies = [
   "dnslib>=0.9.25",
   "dnspython>=2.5",
@@ -22,6 +27,7 @@ classifiers = [
   "Environment :: Console",
   "Intended Audience :: System Administrators",
   "Topic :: Internet :: Name Service (DNS)",
+  "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
@@ -30,6 +36,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Typing :: Typed",
 ]
+
 
 [project.scripts]
 labdns = "labdns.cli:main"

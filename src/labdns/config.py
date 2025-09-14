@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+# (C) Copyright 2025 by OPNLAB Development.
+# This work is licensed through AGPL 3.0.
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -183,4 +187,3 @@ TEMPLATE = """[labdns]
 def write_template(path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(TEMPLATE, encoding="utf-8")
-

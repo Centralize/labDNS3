@@ -1,3 +1,7 @@
+# (C) Copyright 2025 by OPNLAB Development.
+# This work is licensed through AGPL 3.0.
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 """Minimal zonefile loader for A/AAAA records using dnspython.
 
 This covers Epic 1 needs; Epic 2 will expand support.

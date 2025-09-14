@@ -1,3 +1,7 @@
+# (C) Copyright 2025 by OPNLAB Development.
+# This work is licensed through AGPL 3.0.
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 """Resolver integrating zone data with query handling.
 
 Supports A, AAAA, CNAME, MX, TXT, SOA, NS, PTR.
