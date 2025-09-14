@@ -25,7 +25,7 @@ ensure_cfg() {
   mkdir -p "$CONFIG_DIR"
   if [[ ! -f "$GUI_CFG" ]]; then
     cat >"$GUI_CFG" <<EOF
-ZONES_DIR="$(pwd)/examples/zones"
+ZONES_DIR="$(pwd)/zones"
 ZONEFILE=""
 INTERFACE="127.0.0.1"
 PORT="5353"
@@ -289,8 +289,6 @@ main_menu() {
   done
 }
 
-main_menu
-
 # ----- Zone management helpers -----
 
 fqdn_dot() {
@@ -433,3 +431,6 @@ action_remove_record() {
     fi
   fi
 }
+
+# Invoke menu after all functions are defined
+main_menu

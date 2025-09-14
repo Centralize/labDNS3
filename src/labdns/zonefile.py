@@ -290,7 +290,10 @@ def merge_zones(zones: Iterable[ZoneData]) -> ZoneData:
 def load_zones_dir(dir_path: Path) -> ZoneData:
     if not dir_path.exists() or not dir_path.is_dir():
         raise FileNotFoundError(f"Zones directory not found: {dir_path}")
-    zonefiles = sorted(p for p in dir_path.iterdir() if p.is_file())
+    # Only load files with .zone extension
+    zonefiles = sorted(
+        p for p in dir_path.iterdir() if p.is_file() and p.suffix.lower() == ".zone"
+    )
     if not zonefiles:
         raise FileNotFoundError(f"No zonefiles in directory: {dir_path}")
     zones = []

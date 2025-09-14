@@ -74,8 +74,16 @@ def check(ctx: click.Context, path: Path | None) -> None:
                 load_zonefile(appcfg.zonefile)
                 path = appcfg.zonefile
             else:
-                logging.error("No path provided and no zonefile/zones_dir in config")
-                sys.exit(2)
+                # Default to ./zones if present
+                default_dir = Path("zones")
+                if default_dir.exists() and default_dir.is_dir():
+                    from .zonefile import load_zones_dir
+
+                    load_zones_dir(default_dir)
+                    path = default_dir
+                else:
+                    logging.error("No path provided and no zonefile/zones_dir in config; create ./zones or provide a path")
+                    sys.exit(2)
         else:
             if path.is_dir():
                 from .zonefile import load_zones_dir  # local import to avoid cycles

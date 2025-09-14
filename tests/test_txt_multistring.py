@@ -8,7 +8,7 @@ from labdns.zonefile import load_zones_dir
 
 
 def zones_dir() -> Path:
-    return Path(__file__).resolve().parents[1] / "examples" / "zones"
+    return Path(__file__).resolve().parents[1] / "zones"
 
 
 def test_zone_loader_preserves_txt_chunks():
@@ -36,4 +36,3 @@ def test_dns_handler_emits_multistring_txt():
     # Verify both parts appear in textual form
     s = str(txt_rrs[0].rdata)
     assert "v=spf1" in s and "-all" in s
-

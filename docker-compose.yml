@@ -13,8 +13,7 @@ services:
       - LABDNS_INTERFACE=0.0.0.0
       - LABDNS_PORT=53
     volumes:
-      - ./examples/zones:/zones:ro
+      - ./zones:/zones:ro
     cap_add:
       - NET_BIND_SERVICE
     # healthcheck inherited from image
-

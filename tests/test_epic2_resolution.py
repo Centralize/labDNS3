@@ -8,7 +8,7 @@ from labdns.zonefile import load_zones_dir
 
 
 def zones_dir() -> Path:
-    return Path(__file__).resolve().parents[1] / "examples" / "zones"
+    return Path(__file__).resolve().parents[1] / "zones"
 
 
 def make_query(name: str, qtype: str) -> bytes:
@@ -63,4 +63,3 @@ def test_nxdomain_includes_soa_in_authority():
     assert resp.header.rcode == 3  # NXDOMAIN
     auth_soa = [rr for rr in resp.auth if QTYPE[rr.rtype] == "SOA"]
     assert len(auth_soa) == 1
-

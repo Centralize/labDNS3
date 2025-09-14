@@ -15,14 +15,16 @@ Installation
   - `python -m pip install -e .[test]`
 
 Quick start
-- Prepare a zonefile, e.g. `examples/example.zone`
-- Validate single file: `labdns check examples/example.zone`
-- Validate a directory: `labdns check examples/zones`
-- Start with one zonefile (unprivileged port): `labdns start --zonefile examples/example.zone --port 5353 --interface 127.0.0.1`
-- Start with a zones directory: `labdns start --zones-dir examples/zones --port 5353 --interface 127.0.0.1`
+- Prepare a zonefile, e.g. `zones/example.zone`
+- Validate single file: `labdns check zones/example.zone`
+- Validate a directory: `labdns check zones`
+- Start with one zonefile (unprivileged port): `labdns start --zonefile zones/example.zone --port 5353 --interface 127.0.0.1`
+- Start with a zones directory: `labdns start --zones-dir zones --port 5353 --interface 127.0.0.1`
+- Default behavior: if a local `./zones` directory exists, `labdns start` and `labdns check` with no path will use it automatically.
+  - Only files ending in `.zone` are loaded from the `zones/` directory.
 
 Daemon & logging
-- Run in background: `labdns start --zones-dir examples/zones --daemon`
+- Run in background: `labdns start --zones-dir zones --daemon`
 - PID file: `--pid-file ./labdns.pid` (default in daemon mode)
 - Log file: `--log-file ./labdns.log` (default in daemon mode)
 - Log level: `--log-level DEBUG|INFO|WARNING|ERROR|CRITICAL` (or `--verbose`)
@@ -30,6 +32,16 @@ Daemon & logging
 Reload
 - Send SIGHUP: `labdns reload --pid-file ./labdns.pid` or `--pid <PID>`
 - Tip: find PID with `pgrep -f labdns` if running in foreground
+
+Service helper
+- Script: `./labdns.sh` (start/stop/restart/status/reload/logs; install/remove systemd service)
+- Make executable: `chmod +x labdns.sh`
+- Examples:
+  - `./labdns.sh start` (uses `ZONES_DIR=./zones`, `PORT=5353` by default)
+  - `./labdns.sh reload` (SIGHUP via PID or systemd)
+  - `./labdns.sh logs` (tails `./labdns.log` or `journalctl` service logs)
+  - `./labdns.sh install` (user service) or `SERVICE_MODE=system ./labdns.sh install`
+- Environment overrides: `INTERFACE`, `PORT`, `ZONES_DIR`, `ZONEFILE`, `PID_FILE`, `LOG_FILE`, `CONFIG`, `SERVICE_NAME`, `SERVICE_MODE`
 
 Configuration
 - Create a config file: `labdns config init --path ./labdns.ini`
@@ -41,10 +53,10 @@ Configuration
 Docker
 - Build image: `docker build -t labdns .`
 - Run with docker-compose: `docker-compose up -d`
-  - Mount your zonefiles into `./examples/zones` or adjust the volume in compose
+  - Mount your zonefiles into `./zones` or adjust the volume in compose
   - The container exposes UDP 53 and runs as a non-root user; compose grants NET_BIND_SERVICE to bind port 53
 - Direct docker run example:
-  - `docker run -d --name labdns --cap-add=NET_BIND_SERVICE -p 53:53/udp -v $(pwd)/examples/zones:/zones:ro labdns:latest`
+  - `docker run -d --name labdns --cap-add=NET_BIND_SERVICE -p 53:53/udp -v $(pwd)/zones:/zones:ro labdns:latest`
 
 Supported Python versions
 - Python 3.10, 3.11, 3.12

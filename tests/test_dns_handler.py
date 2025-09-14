@@ -8,7 +8,7 @@ from labdns.zonefile import load_zonefile
 
 
 def example_zone_path() -> Path:
-    return Path(__file__).resolve().parents[1] / "examples" / "example.zone"
+    return Path(__file__).resolve().parents[1] / "zones" / "example.zone"
 
 
 def make_query(name: str, qtype: str) -> bytes:
@@ -52,4 +52,3 @@ def test_nxdomain_on_missing_name():
     resp = DNSRecord.parse(resp_bytes)
     assert resp.header.rcode == 3  # NXDOMAIN
     assert len(resp.rr) == 0
-

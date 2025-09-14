@@ -165,7 +165,7 @@ def to_dict(cfg: AppConfig) -> dict:
 
 TEMPLATE = """[labdns]
 # Single zone file (path) or zones_dir (directory of multiple zone files)
-# zonefile = ./examples/example.zone
+# zonefile = ./zones/example.zone
 # zones_dir = ./zones
 
 # Network
