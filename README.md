@@ -51,6 +51,22 @@ Supported Python versions
 
 Supported record types
 - A, AAAA, CNAME, MX, TXT (multi-string), SOA, NS, PTR
+- SRV, CAA, DNSKEY, DS, RP, NAPTR, RRSIG, CERT, DNAME, IPSECKEY, OPENPGPKEY, SPF
+- SSHFP
+
+Features
+- Multi-zone directory loading (merge all files under a directory)
+- Wildcard matching (*.domain) and CNAME chaining with limits
+- Authority section: NS on positive responses; SOA for NXDOMAIN/NODATA
+- Hot reload on SIGHUP; `labdns reload` helper
+- Daemon mode with PID/log files; configurable log level
+- Config via file and environment; CLI overrides
+
+Query examples
+- A record: `dig @127.0.0.1 -p 5353 www.example.test A`
+- AAAA record: `dig @127.0.0.1 -p 5353 api.example.test AAAA`
+- SRV record: `dig @127.0.0.1 -p 5353 _sip._tcp.epic2.test SRV`
+- CAA record: `dig @127.0.0.1 -p 5353 epic2.test CAA`
 
 Notes
 - Binding to UDP port 53 typically requires elevated privileges; use `--port 5353` for local testing.

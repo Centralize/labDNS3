@@ -219,6 +219,18 @@ def load_zonefile(path: Path) -> ZoneData:
                         },
                         ttl,
                     )
+                elif getattr(dns.rdatatype, 'SSHFP', None) and rdataset.rdtype == dns.rdatatype.SSHFP:
+                    zone.add_record(
+                        fqdn,
+                        'SSHFP',
+                        {
+                            'algorithm': int(getattr(rdata, 'algorithm', 0)),
+                            'fp_type': int(getattr(rdata, 'fp_type', getattr(rdata, 'fingerprint_type', 0))),
+                            'fingerprint': str(getattr(rdata, 'fingerprint', '')),
+                            'raw': rdata.to_text(),
+                        },
+                        ttl,
+                    )
                 elif getattr(dns.rdatatype, 'IPSECKEY', None) and rdataset.rdtype == dns.rdatatype.IPSECKEY:
                     zone.add_record(
                         fqdn,
