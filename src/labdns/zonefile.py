@@ -101,6 +101,158 @@ def load_zonefile(path: Path) -> ZoneData:
                         'minimum': int(rdata.minimum),
                     }
                     zone.soas[_normalize_name(fqdn)] = (int(ttl) if ttl is not None else zone.default_ttl, soa)
+                elif rdataset.rdtype == dns.rdatatype.SRV:
+                    zone.add_record(
+                        fqdn,
+                        'SRV',
+                        {
+                            'priority': int(rdata.priority),
+                            'weight': int(rdata.weight),
+                            'port': int(rdata.port),
+                            'target': str(rdata.target),
+                            'raw': rdata.to_text(),
+                        },
+                        ttl,
+                    )
+                elif rdataset.rdtype == dns.rdatatype.CAA:
+                    zone.add_record(
+                        fqdn,
+                        'CAA',
+                        {
+                            'flags': int(rdata.flags),
+                            'tag': str(rdata.tag),
+                            'value': str(rdata.value),
+                            'raw': rdata.to_text(),
+                        },
+                        ttl,
+                    )
+                elif rdataset.rdtype == dns.rdatatype.DNSKEY:
+                    zone.add_record(
+                        fqdn,
+                        'DNSKEY',
+                        {
+                            'flags': int(rdata.flags),
+                            'protocol': int(rdata.protocol),
+                            'algorithm': int(rdata.algorithm),
+                            'key': str(rdata.key),
+                            'raw': rdata.to_text(),
+                        },
+                        ttl,
+                    )
+                elif rdataset.rdtype == dns.rdatatype.DS:
+                    zone.add_record(
+                        fqdn,
+                        'DS',
+                        {
+                            'key_tag': int(rdata.key_tag),
+                            'algorithm': int(rdata.algorithm),
+                            'digest_type': int(rdata.digest_type),
+                            'digest': rdata.digest.hex() if hasattr(rdata.digest, 'hex') else str(rdata.digest),
+                            'raw': rdata.to_text(),
+                        },
+                        ttl,
+                    )
+                elif rdataset.rdtype == dns.rdatatype.RP:
+                    zone.add_record(
+                        fqdn,
+                        'RP',
+                        {
+                            'mbox': str(rdata.mbox),
+                            'txt': str(rdata.txt),
+                            'raw': rdata.to_text(),
+                        },
+                        ttl,
+                    )
+                elif rdataset.rdtype == dns.rdatatype.NAPTR:
+                    zone.add_record(
+                        fqdn,
+                        'NAPTR',
+                        {
+                            'order': int(rdata.order),
+                            'preference': int(rdata.preference),
+                            'flags': str(rdata.flags),
+                            'service': str(rdata.service),
+                            'regexp': str(rdata.regexp),
+                            'replacement': str(rdata.replacement),
+                            'raw': rdata.to_text(),
+                        },
+                        ttl,
+                    )
+                elif rdataset.rdtype == dns.rdatatype.RRSIG:
+                    zone.add_record(
+                        fqdn,
+                        'RRSIG',
+                        {
+                            'type_covered': str(rdata.type_covered),
+                            'algorithm': int(rdata.algorithm),
+                            'labels': int(rdata.labels),
+                            'original_ttl': int(rdata.original_ttl),
+                            'expiration': int(rdata.expiration),
+                            'inception': int(rdata.inception),
+                            'key_tag': int(rdata.key_tag),
+                            'signer': str(rdata.signer),
+                            'signature': getattr(rdata, 'signature', b''),
+                            'raw': rdata.to_text(),
+                        },
+                        ttl,
+                    )
+                elif rdataset.rdtype == dns.rdatatype.CERT:
+                    zone.add_record(
+                        fqdn,
+                        'CERT',
+                        {
+                            'cert_type': int(rdata.certificate_type),
+                            'key_tag': int(rdata.key_tag),
+                            'algorithm': int(rdata.algorithm),
+                            'certificate': getattr(rdata, 'certificate', b''),
+                            'raw': rdata.to_text(),
+                        },
+                        ttl,
+                    )
+                elif rdataset.rdtype == dns.rdatatype.DNAME:
+                    zone.add_record(
+                        fqdn,
+                        'DNAME',
+                        {
+                            'target': str(rdata.target),
+                            'raw': rdata.to_text(),
+                        },
+                        ttl,
+                    )
+                elif getattr(dns.rdatatype, 'IPSECKEY', None) and rdataset.rdtype == dns.rdatatype.IPSECKEY:
+                    zone.add_record(
+                        fqdn,
+                        'IPSECKEY',
+                        {
+                            'precedence': int(rdata.precedence),
+                            'gateway_type': int(rdata.gateway_type),
+                            'algorithm': int(rdata.algorithm),
+                            'gateway': str(getattr(rdata, 'gateway', '')),
+                            'public_key': str(getattr(rdata, 'public_key', '')),
+                            'raw': rdata.to_text(),
+                        },
+                        ttl,
+                    )
+                elif getattr(dns.rdatatype, 'OPENPGPKEY', None) and rdataset.rdtype == dns.rdatatype.OPENPGPKEY:
+                    zone.add_record(
+                        fqdn,
+                        'OPENPGPKEY',
+                        {
+                            'public_key': str(getattr(rdata, 'public_key', '')),
+                            'raw': rdata.to_text(),
+                        },
+                        ttl,
+                    )
+                elif rdataset.rdtype == getattr(dns.rdatatype, 'SPF', 99):
+                    # Store SPF like TXT and also map to TXT for compatibility
+                    try:
+                        parts = [s.decode('utf-8', errors='replace') for s in rdata.strings]  # type: ignore[attr-defined]
+                        if not parts:
+                            parts = [str(rdata).strip('"')]
+                    except Exception:
+                        parts = [str(rdata).strip('"')]
+                    zone.add_record(fqdn, 'SPF', parts, ttl)
+                    zone.add_record(fqdn, 'TXT', parts, ttl)
                 else:
                     # Ignore other types for now
                     pass

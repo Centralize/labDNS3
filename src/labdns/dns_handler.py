@@ -9,7 +9,23 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
-from dnslib import A, AAAA, CNAME, DNSHeader, DNSLabel, DNSRecord, MX, NS, PTR, QTYPE, RR, SOA, TXT
+from dnslib import (
+    A,
+    AAAA,
+    CNAME,
+    DNSHeader,
+    DNSLabel,
+    DNSRecord,
+    MX,
+    NS,
+    PTR,
+    QTYPE,
+    RR,
+    SOA,
+    TXT,
+    SRV,
+    CAA,
+)
 
 from .resolver import ResolveResult, Resolver
 
@@ -62,6 +78,34 @@ def handle_query(packet_bytes: bytes, resolver: Resolver, ttl: int = 300) -> Opt
                 else:
                     rdata = TXT(str(data))
             reply.add_answer(RR(name, QTYPE.TXT, rdata=rdata, ttl=rttl))
+        elif rtype == 'SPF':
+            # Prefer SPF type if available, else fallback to TXT
+            try:
+                code = QTYPE.SPF  # type: ignore[attr-defined]
+            except Exception:
+                code = QTYPE.TXT
+            try:
+                if isinstance(data, (list, tuple)):
+                    rdata = TXT(*[str(x) for x in data])
+                else:
+                    rdata = TXT(str(data))
+            except TypeError:
+                if isinstance(data, (list, tuple)):
+                    rdata = TXT([str(x) for x in data])
+                else:
+                    rdata = TXT(str(data))
+            reply.add_answer(RR(name, code, rdata=rdata, ttl=rttl))
+        elif rtype == 'SRV':
+            prio = int(data['priority'])
+            weight = int(data['weight'])
+            port = int(data['port'])
+            target = DNSLabel(str(data['target']))
+            reply.add_answer(RR(name, QTYPE.SRV, rdata=SRV(prio, weight, port, target), ttl=rttl))
+        elif rtype == 'CAA':
+            flags = int(data['flags'])
+            tag = str(data['tag'])
+            value = str(data['value'])
+            reply.add_answer(RR(name, QTYPE.CAA, rdata=CAA(flags, tag, value), ttl=rttl))
         elif rtype == 'PTR':
             reply.add_answer(RR(name, QTYPE.PTR, rdata=PTR(DNSLabel(str(data))), ttl=rttl))
         elif rtype == 'SOA':
@@ -70,6 +114,15 @@ def handle_query(packet_bytes: bytes, resolver: Resolver, ttl: int = 300) -> Opt
             rname = DNSLabel(soa['rname'])
             times = (soa['serial'], soa['refresh'], soa['retry'], soa['expire'], soa['minimum'])
             reply.add_answer(RR(name, QTYPE.SOA, rdata=SOA(mname, rname, times), ttl=rttl))
+        else:
+            # Fallback for complex types using raw zone text if present
+            try:
+                if isinstance(data, dict) and 'raw' in data:
+                    zone_line = f"{name} {rttl} IN {rtype} {data['raw']}"
+                    for rr in RR.fromZone(zone_line):
+                        reply.add_answer(rr)
+            except Exception as exc:  # noqa: BLE001
+                log.debug("Failed to render %s via zone fallback: %s", rtype, exc)
 
     # Add CNAME chain answers first
     for name, cttl, target in result.cnames:
