@@ -75,3 +75,17 @@ Notes
 License
 - (C) Copyright 2025 by OPNLAB Development. This work is licensed through AGPL 3.0.
 - See LICENSE.md for full license details.
+
+GUI (Optional)
+- Script: `./labdns-gui.sh` (requires `zenity` or `yad`)
+- Make executable: `chmod +x labdns-gui.sh`
+- Features:
+  - Start server (daemonized) with chosen zonefile or zones directory
+  - Create new zone (SOA/NS template)
+  - Add/remove records (A, AAAA, CNAME, MX, TXT, SRV, CAA, NS, PTR)
+  - Validate zonefile or directory
+  - Reload server via SIGHUP
+  - View recent logs
+  - Stop server (SIGTERM)
+  - Manage defaults (zones dir/file, interface, port, PID/log file)
+- Config file: `~/.config/labdns/gui.conf`
