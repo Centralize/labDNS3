@@ -14,6 +14,15 @@ Installation
   - `python -m pip install -U pip`
   - `python -m pip install -e .[test]`
 
+Makefile (production-friendly)
+- User install to `~/.local`: `make install`
+- System install (uses sudo): `make install MODE=system`
+  - On Debian/Ubuntu with PEP 668, add: `PIP_FLAGS='--break-system-packages'`
+- Uninstall: `make uninstall` or `make uninstall MODE=system`
+  - After user install, ensure `~/.local/bin` is in `PATH`.
+ - Install as systemd service: `make service-install` (user) or `make service-install MODE=system`
+ - Remove systemd service: `make service-remove` (user) or `make service-remove MODE=system`
+
 Quick start
 - Prepare a zonefile, e.g. `zones/example.zone`
 - Validate single file: `labdns check zones/example.zone`

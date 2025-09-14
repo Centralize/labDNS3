@@ -17,6 +17,13 @@ SERVICE_NAME=${SERVICE_NAME:-labdns}
 # install mode: user|system (system requires sudo/root)
 SERVICE_MODE=${SERVICE_MODE:-user}
 
+# If labdns CLI is not in PATH but a local venv exists, prefer it
+if ! command -v labdns >/dev/null 2>&1; then
+  if [ -x "$(pwd)/.venv/bin/labdns" ]; then
+    export PATH="$(pwd)/.venv/bin:$PATH"
+  fi
+fi
+
 cmd_exists() { command -v "$1" >/dev/null 2>&1; }
 
 log() { printf '%s\n' "$*"; }
