@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  labdns:
+    build: .
+    image: labdns:latest
+    container_name: labdns
+    restart: unless-stopped
+    ports:
+      - "53:53/udp"
+    environment:
+      - LABDNS_ZONES_DIR=/zones
+      - LABDNS_INTERFACE=0.0.0.0
+      - LABDNS_PORT=53
+    volumes:
+      - ./examples/zones:/zones:ro
+    cap_add:
+      - NET_BIND_SERVICE
+    # healthcheck inherited from image
+

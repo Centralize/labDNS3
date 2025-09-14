@@ -8,7 +8,7 @@ import signal
 import socket
 import sys
 from dataclasses import dataclass
-from typing import Optional
+from typing import Callable, Optional
 
 from .dns_handler import handle_query
 from .resolver import Resolver
@@ -19,6 +19,7 @@ class ServerConfig:
     interface: str = "0.0.0.0"
     port: int = 53
     zonefile: str | None = None
+    pid_file: str | None = None
 
 
 class DNSServer:
@@ -26,6 +27,7 @@ class DNSServer:
         self.config = config
         self.resolver = resolver
         self._stop = False
+        self._reload_cb: Optional[Callable[[], Resolver]] = None
 
     def run(self) -> None:
         log = logging.getLogger(__name__)
@@ -47,6 +49,21 @@ class DNSServer:
 
         signal.signal(signal.SIGINT, _handle_signal)
         signal.signal(signal.SIGTERM, _handle_signal)
+        
+        def _handle_hup(signum, _frame):
+            if self._reload_cb is None:
+                log.info("SIGHUP received but reload is not configured")
+                return
+            log.info("Received SIGHUP, attempting zone reload")
+            try:
+                new_resolver = self._reload_cb()
+            except Exception as exc:  # noqa: BLE001
+                log.error("Zone reload failed: %s", exc)
+                return
+            self.resolver = new_resolver
+            log.info("Zone reload successful")
+
+        signal.signal(signal.SIGHUP, _handle_hup)
 
         sock.setblocking(False)
         try:
@@ -73,3 +90,22 @@ class DNSServer:
         finally:
             sock.close()
             log.info("Server stopped")
+            # Cleanup PID file if we created one
+            if self.config.pid_file:
+                try:
+                    import os
+
+                    if os.path.exists(self.config.pid_file):
+                        # Only remove if it points to us
+                        try:
+                            content = open(self.config.pid_file, "r", encoding="utf-8").read().strip()
+                            if content and int(content) == os.getpid():
+                                os.remove(self.config.pid_file)
+                        except Exception:
+                            # Best-effort cleanup
+                            os.remove(self.config.pid_file)
+                except Exception:
+                    pass
+
+    def set_reload_callback(self, cb: Callable[[], Resolver]) -> None:
+        self._reload_cb = cb

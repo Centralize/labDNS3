@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "labdns"
 version = "0.1.0"
 description = "labDNS 3.0 – lightweight, extensible DNS server in Python"
-readme = "README.md"
+readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
 authors = [
   { name = "labDNS Team" }
@@ -15,6 +15,20 @@ dependencies = [
   "dnslib>=0.9.25",
   "dnspython>=2.5",
   "click>=8.1"
+]
+keywords = ["dns", "server", "zonefile", "bind", "dnslib", "dnspython", "cli"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: System Administrators",
+  "Topic :: Internet :: Name Service (DNS)",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
 ]
 
 [project.scripts]

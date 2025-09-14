@@ -1,0 +1,28 @@
+$ORIGIN epic2.test.
+$TTL 300
+@   IN SOA ns1.epic2.test. hostmaster.epic2.test. (
+        2025010101 ; serial
+        3600       ; refresh
+        900        ; retry
+        1209600    ; expire
+        300        ; minimum
+)
+    IN NS  ns1.epic2.test.
+
+ns1 IN A   192.0.2.60
+
+; CNAME chain: www -> web -> host
+www IN CNAME web.epic2.test.
+web IN CNAME host.epic2.test.
+host IN A  192.0.2.61
+
+; Wildcard
+*.wild IN A 192.0.2.99
+
+; MX, TXT, PTR
+@   IN MX 10 mail.epic2.test.
+mail IN A  192.0.2.62
+@   IN TXT "v=spf1" "-all"
+
+; PTR example (not realistic without proper reverse zone)
+ptrhost IN PTR name.epic2.test.
